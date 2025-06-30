@@ -1,7 +1,7 @@
 /** 
  * serializeToJSON jQuery plugin
  * https://github.com/raphaelm22/jquery.serializeToJSON
- * @version: v1.4.1 (October, 2019)
+ * @version: v1.4.2 (June, 2025)
  * @author: Raphael Nunes
  *
  * Created by Raphael Nunes on 2015-08-28.
@@ -129,7 +129,17 @@
 			},
 			
 			includeUncheckValues: function(selector, formAsArray){
-				$(":radio", selector).each(function(){
+				let collection = $();
+				if(selector.length > 1 || (selector.length === 1 && selector[0].tagName !== 'FORM')){
+					selector.each(function(){
+						if(this.tagName === 'RADIO'){
+							collection = collection.add(this);
+						}
+					});
+				}else{
+					collection = $(":radio", selector);
+				}
+				collection.each(function(){
 					var isUncheckRadio = $("input[name='" + this.name + "']:radio:checked").length === 0;
 					if (isUncheckRadio)
 					{
@@ -139,8 +149,18 @@
 						});
 					}
 				});
-				
-				$("select[multiple]", selector).each(function(){					
+
+				collection = $();
+				if(selector.length > 1 || (selector.length === 1 && selector[0].tagName !== 'FORM')){
+					selector.each(function(){
+						if(this.tagName === 'SELECT' && this.multiple === true){
+							collection = collection.add(this);
+						}
+					});
+				}else{
+					collection = $("select[multiple]", selector);
+				}
+				collection.each(function(){
 					if ($(this).val() === null){
 						formAsArray.push({
 							name: this.name,
