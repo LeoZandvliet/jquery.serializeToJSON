@@ -129,23 +129,27 @@
 			},
 			
 			includeUncheckValues: function(selector, formAsArray){
-				$(":radio", selector).each(function(){
-					var isUncheckRadio = $("input[name='" + this.name + "']:radio:checked").length === 0;
-					if (isUncheckRadio)
-					{
-						formAsArray.push({
-							name: this.name,
-							value: null
-						});
-					}
-				});
-				
-				$("select[multiple]", selector).each(function(){					
-					if ($(this).val() === null){
-						formAsArray.push({
-							name: this.name,
-							value: null
-						});
+				selector.map(function(){
+					// Can add propHook for "elements" to filter or add form elements
+					let elements = jQuery.prop( this, "elements" );
+					return elements ? jQuery.makeArray( elements ) : this;
+				}).each(function(){
+					if(this.tagName === 'RADIO'){
+						var isUncheckRadio = $("input[name='" + this.name + "']:radio:checked").length === 0;
+						if (isUncheckRadio)
+						{
+							formAsArray.push({
+								name: this.name,
+								value: null
+							});
+						}
+					}else if(this.tagName === 'SELECT' && this.multiple === true) {
+						if ($(this).val() === null){
+							formAsArray.push({
+								name: this.name,
+								value: null
+							});
+						}
 					}
 				});
 			},
